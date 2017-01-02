@@ -1,2 +1,6 @@
 gem 'aws-sdk', '~> 2'
-gem 'dotenv-rails', :groups => [:development, :test]
+
+group :development, :test do
+  gem 'dotenv'
+  gem 'pry'
+end
