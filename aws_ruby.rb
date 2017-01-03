@@ -12,4 +12,8 @@ class AwsRedshift
 
     @redshift = Aws::Redshift::Client.new(region: 'us-east-1')
   end
+
+  def redshift_clusters
+     @redshift.describe_clusters.clusters
+   end
 end
