@@ -1,4 +1,5 @@
 GEM
+  remote: https://rubygems.org/
   specs:
     aws-sdk (2.6.38)
       aws-sdk-resources (= 2.6.38)
@@ -25,4 +26,4 @@ DEPENDENCIES
   pry
 
 BUNDLED WITH
-   1.13.5
+   1.13.6
