@@ -1,14 +1,14 @@
 class Redshift < AwsBase
-  attr_reader :ec2_instance
+  attr_reader :redshift
 
   def initialize
     # Credentials documentation:
     # http://docs.aws.amazon.com/sdk-for-ruby/v2/developer-guide/setup-config.html
 
-    @ec2 = Aws::Redshift::Client.new(region: 'us-east-1')
+    @redshift = Aws::Redshift::Client.new(region: 'us-east-1')
   end
 
-  def ec2_instance
+  def redshift_clusters
      @redshift.describe_clusters.clusters
    end
 end
