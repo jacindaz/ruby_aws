@@ -1,3 +1,5 @@
+require_relative 'aws_base'
+
 class Redshift < AwsBase
   attr_reader :redshift
 

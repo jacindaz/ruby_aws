@@ -1,3 +1,5 @@
+require_relative 'aws_base'
+
 class EC2 < AwsBase
   attr_reader :ec2
 
