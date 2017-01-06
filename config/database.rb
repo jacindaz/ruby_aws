@@ -11,7 +11,7 @@ class PgConnect
   def execute_query(query)
     query_results = []
     @connect.exec(query) do |results|
-      results.each{ |r| query_results << r }
+      results.each{ |r| query_results << r["ddl"].strip }
     end
 
     query_results
