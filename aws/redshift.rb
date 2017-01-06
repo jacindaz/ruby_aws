@@ -36,15 +36,15 @@ class Redshift < AwsBase
 
   private
 
-  def check_presence_or_create_schema(schema_name)
-    schemas = @connection.execute_query("select * from pg_catalog.pg_namespace where nspname = '#{schema_name}'")
+  def create_table_command(table_name, schema_name)
+    generate_table_ddl_view
 
-    if schemas.length == 0
-      @logger.info("Creating #{schema_name} schema, does not exist.")
-      @connection.execute_query("create schema if not exists #{schema_name}")
-    else
-      @logger.info("Admin #{schema_name} exists, not re-creating.")
-    end
+    @logger.info("Querying the admin.v_generate_tbl_ddl view for the create table command.")
+    @connection.execute_query(
+      "select ddl from admin.v_generate_tbl_ddl
+       where tablename = '#{table_name}'
+       and schemaname = '#{schema_name}'"
+    ).join(" ")
   end
 
   def generate_table_ddl_view
@@ -56,15 +56,14 @@ class Redshift < AwsBase
     )
   end
 
-  def create_table_command(table_name, schema_name)
-    @logger.info("Querying the admin.v_generate_tbl_ddl view for the create table command.")
-    @connection.execute_query(
-      "select ddl from admin.v_generate_tbl_ddl
-       where tablename = '#{table_name}'
-       and schemaname = '#{schema_name}'"
-    ).join(" ")
-  end
+  def check_presence_or_create_schema(schema_name)
+    schemas = @connection.execute_query("select * from pg_catalog.pg_namespace where nspname = '#{schema_name}'")
 
-  def drop_table_and_dependencies
+    if schemas.length == 0
+      @logger.info("Creating #{schema_name} schema, does not exist.")
+      @connection.execute_query("create schema if not exists #{schema_name}")
+    else
+      @logger.info("Admin #{schema_name} exists, not re-creating.")
+    end
   end
 end
