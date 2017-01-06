@@ -9,6 +9,7 @@ class Redshift < AwsBase
 
     @redshift = Aws::Redshift::Client.new(region: 'us-east-1')
     @connection = PgConnect.new("redshift")
+    @logger = AwsLogger.new.logger
   end
 
   def run_create_table(table_name, schema_name)
@@ -36,12 +37,15 @@ class Redshift < AwsBase
   private
 
   def generate_table_ddl_view
+    # also need to check that admin schema exists
+    @logger.info("Generating table ddl from https://github.com/awslabs/amazon-redshift-utils/blob/master/src/AdminViews/v_generate_tbl_ddl.sql")
     @connection.execute_query(
       File.open(ENV["SQL_FILE_PATH"], 'rb') { |file| file.read }
     )
   end
 
   def create_table_command(table_name, schema_name)
+    @logger.info("Querying the admin.v_generate_tbl_ddl view for the create table command.")
     @connection.execute_query(
       "select ddl from admin.v_generate_tbl_ddl
        where tablename = '#{table_name}'
