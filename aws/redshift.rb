@@ -11,17 +11,44 @@ class Redshift < AwsBase
     @connection = PgConnect.new("redshift")
   end
 
+  def run_create_table(table_name, schema_name)
+    # Steps:
+    #  => check if table has dependencies
+    #  => display dependencies to stdout
+    #  => ask if user still wants to continue
+    #  => if not, quit
+    #  => if yes, display each dependency again and that they will be dropped
+    #  => run drop table if exists <TABLENAME> cascade
+
+    create_table_ddl = create_table_command(table_name, schema_name)
+
+    binding.pry
+
+    # append distribution and sort keys to sql
+    # run resulting sql to drop and re-create table
+    # @connection.execute_query()
+  end
+
   def redshift_clusters
     @redshift.describe_clusters.clusters
   end
 
+  private
+
   def generate_table_ddl_view
-    sql = File.open(ENV["SQL_FILE_PATH"], 'rb') { |file| file.read }
-    @connection.execute_query(sql)
+    @connection.execute_query(
+      File.open(ENV["SQL_FILE_PATH"], 'rb') { |file| file.read }
+    )
   end
 
   def create_table_command(table_name, schema_name)
-    sql = "select ddl from admin.v_generate_tbl_ddl where tablename = '#{table_name}' and schemaname = '#{schema_name}'"
-    @connection.execute_query(sql)
+    @connection.execute_query(
+      "select ddl from admin.v_generate_tbl_ddl
+       where tablename = '#{table_name}'
+       and schemaname = '#{schema_name}'"
+    ).join(" ")
+  end
+
+  def drop_table_and_dependencies
   end
 end
