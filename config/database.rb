@@ -22,7 +22,7 @@ class PgConnect
   def pg_connection(type)
     case type
     when "redshift"
-      PG::Connection.new(dbname: "mongoprod", port: 5432, host: ENV["REDSHIFT_JDBC"], user: ENV["REDSHIFT_USER"], password: ENV["REDSHIFT_PASSWORD"], connect_timeout: 30)
+      PG::Connection.new(dbname: "mongoprod", port: ENV["REDSHIFT_PORT"], host: ENV["REDSHIFT_HOST"], user: ENV["REDSHIFT_USER"], password: ENV["REDSHIFT_PASSWORD"], connect_timeout: 10)
     when "localhost"
       PG::Connection.new(dbname: "entelo_development", host: "localhost", port: 5432 )
     else
