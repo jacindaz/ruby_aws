@@ -1,1 +1,2 @@
 .env
+aws/generate_table_ddl.sql
