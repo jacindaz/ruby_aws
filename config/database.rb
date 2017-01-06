@@ -26,7 +26,7 @@ class PgConnect
     when "localhost"
       PG::Connection.new(dbname: "entelo_development", host: "localhost", port: 5432 )
     else
-      raise PgConnectError, "Type needs to be 'localhost' or 'redshift'."
+      raise PgConnectError, "Unable to connect - type needs to be 'localhost' or 'redshift'."
     end
   end
 end
