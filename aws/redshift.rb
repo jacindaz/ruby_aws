@@ -36,9 +36,21 @@ class Redshift < AwsBase
 
   private
 
+  def check_presence_or_create_schema(schema_name)
+    schemas = @connection.execute_query("select * from pg_catalog.pg_namespace where nspname = '#{schema_name}'")
+
+    if schemas.length == 0
+      @logger.info("Creating #{schema_name} schema, does not exist.")
+      @connection.execute_query("create schema if not exists #{schema_name}")
+    else
+      @logger.info("Admin #{schema_name} exists, not re-creating.")
+    end
+  end
+
   def generate_table_ddl_view
-    # also need to check that admin schema exists
-    @logger.info("Generating table ddl from https://github.com/awslabs/amazon-redshift-utils/blob/master/src/AdminViews/v_generate_tbl_ddl.sql")
+    check_presence_or_create_schema("admin")
+
+    @logger.info("Creating or replacing view admin.v_generate_tbl_ddl \nSource: https://github.com/awslabs/amazon-redshift-utils/blob/master/src/AdminViews/v_generate_tbl_ddl.sql")
     @connection.execute_query(
       File.open(ENV["SQL_FILE_PATH"], 'rb') { |file| file.read }
     )
