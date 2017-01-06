@@ -19,4 +19,9 @@ class Redshift < AwsBase
     sql = File.open(ENV["SQL_FILE_PATH"], 'rb') { |file| file.read }
     @connection.execute_query(sql)
   end
+
+  def create_table_command(table_name, schema_name)
+    sql = "select ddl from admin.v_generate_tbl_ddl where tablename = '#{table_name}' and schemaname = '#{schema_name}'"
+    @connection.execute_query(sql)
+  end
 end
