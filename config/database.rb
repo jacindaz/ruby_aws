@@ -8,10 +8,14 @@ class PgConnect
     @connect = pg_connection(type)
   end
 
+  def raw_result(query)
+    @connect.exec(query)
+  end
+
   def execute_query(query)
     query_results = []
     @connect.exec(query) do |results|
-      results.each{ |r| query_results << r["ddl"].strip }
+      results.each{ |r| query_results << r }
     end
 
     query_results

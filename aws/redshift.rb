@@ -22,8 +22,7 @@ class Redshift < AwsBase
     #  => run drop table if exists <TABLENAME> cascade
 
     create_table_ddl = create_table_command(table_name, schema_name)
-
-    binding.pry
+    @connection.raw_result(create_table_ddl)
 
     # append distribution and sort keys to sql
     # run resulting sql to drop and re-create table
@@ -40,11 +39,11 @@ class Redshift < AwsBase
     generate_table_ddl_view
 
     @logger.info("Querying the admin.v_generate_tbl_ddl view for the create table command.")
-    @connection.execute_query(
-      "select ddl from admin.v_generate_tbl_ddl
+
+    sql = "select ddl from admin.v_generate_tbl_ddl
        where tablename = '#{table_name}'
        and schemaname = '#{schema_name}'"
-    ).join(" ")
+    @connection.raw_result(sql).column_values(0).join(" ")
   end
 
   def generate_table_ddl_view
