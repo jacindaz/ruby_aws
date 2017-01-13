@@ -21,6 +21,15 @@ class PgConnect
     query_results
   end
 
+  def execute_query_and_clean_up(query, key_to_clean_up)
+    query_results = []
+    @connect.exec(query) do |results|
+      results.each{ |r| query_results << r[key_to_clean_up].strip }
+    end
+
+    query_results
+  end
+
   private
 
   def pg_connection(type)
