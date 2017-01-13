@@ -13,29 +13,11 @@ class Redshift < AwsBase
   end
 
   def run_create_table(table_name, schema_name)
-    # Steps:
-    #  => check if table has dependencies
-    #  => display dependencies to stdout
-    #  => ask if user still wants to continue
-    #  => if not, quit
-    #  => if yes, display each dependency again and that they will be dropped
-    #  => run drop table if exists <TABLENAME> cascade
-
     create_table_ddl = create_table_command(table_name, schema_name)
-    @connection.raw_result(create_table_ddl)
-
-    # append distribution and sort keys to sql
-    # run resulting sql to drop and re-create table
-    # @connection.execute_query()
+    @connection.execute_ddl_query(create_table_ddl)
   end
 
-  def redshift_clusters
-    @redshift.describe_clusters.clusters
-  end
-
-  private
-
-  def create_table_command(table_name, schema_name)
+  def generate_create_table_ddl(table_name, schema_name)
     generate_table_ddl_view
 
     @logger.info("Querying the admin.v_generate_tbl_ddl view for the create table command.")
@@ -43,8 +25,11 @@ class Redshift < AwsBase
     sql = "select ddl from admin.v_generate_tbl_ddl
        where tablename = '#{table_name}'
        and schemaname = '#{schema_name}'"
-    @connection.raw_result(sql).column_values(0).join(" ")
+
+    @connection.execute_query_and_clean_up(sql, "ddl").join(" ")
   end
+
+  private
 
   def generate_table_ddl_view
     check_presence_or_create_schema("admin")
