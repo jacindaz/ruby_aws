@@ -1,9 +1,7 @@
-work_credentials = {
+learnup_credentials = {
    credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY'], ENV['AWS_SECRET_KEY'])
 }
 
-jacinda_credentials = {
-   credentials: Aws::Credentials.new(ENV['JACINDA_AWS_ACCESS_KEY'], ENV['JACINDA_AWS_SECRET_KEY'])
-}
+# can add in more credentials for different IAM users here
 
-Aws.config.update(work_credentials)
+Aws.config.update(learnup_credentials)
