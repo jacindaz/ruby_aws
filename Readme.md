@@ -18,3 +18,7 @@
  * also, need a YUGE WARNING when executing drop table
  * fivetran will take some time to re-sync data
  * so there will be a delay, that table will be empty for a few hours, or up to 24 hours depending on how big the table is, and how long it takes fivetran to sync
+
+## Clean up aws config for AWS CLI tool:
+ * create .aws folder
+ * add config and credentials file
